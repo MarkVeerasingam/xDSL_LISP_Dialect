@@ -23,11 +23,12 @@ class VarType:
 
 class ExprASTKind(Enum):
     Expr_VarDecl = 1     # "(set x 5)"
-    Expr_Num = 2        # "10"
-    Expr_Var = 3        # "x"
-    Expr_BinOp = 4      # "(+ x 2)"
+    Expr_Return = 2     # "(return x)"
+    Expr_Num = 3        # "10"
+    Expr_Var = 4        # "x"
+    Expr_BinOp = 5      # "(+ x 2)"
     # add later:
-    # Expr_Print = 5    # "(print x)"
+    # Expr_Print = 6    # "(print x)"
 
 @dataclass()
 class Dumper:
@@ -144,3 +145,17 @@ class BinaryExprAST(ExprAST):
         self.lhs.inner_dump("", child)
         self.rhs.inner_dump("", child)
 
+@dataclass
+class ReturnExprAST(ExprAST):
+    "Expression class for a return statement."
+
+    expr: ExprAST  # The expression to return, if any.
+
+    @property
+    def kind(self):
+        return ExprASTKind.Expr_Return
+
+    def inner_dump(self, prefix: str, dumper: Dumper):
+        dumper.append(prefix, "Return")
+        child = dumper.child()
+        self.expr.inner_dump("", child)
